@@ -44,6 +44,12 @@ function handleLogin() {
     >
       Login
     </button>
+    <NuxtLink
+to="/register"
+class="block text-center text-sm text-blue-600 mt-2"
+>
+Create account
+</NuxtLink>
 
   </div>
 
