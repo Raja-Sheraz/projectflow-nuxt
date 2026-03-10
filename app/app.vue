@@ -1,18 +1,16 @@
 <script setup lang="ts">
+import { onMounted } from "vue"
+import { useAuthStore } from "~~/stores/authStore"
 
-import { useUiStore } from "~~/stores/uiStore"
-import AppLoader from "~/components/AppLoader.vue"
+const authStore = useAuthStore()
 
-const uiStore = useUiStore()
-
+onMounted(() => {
+  authStore.loadUser()
+})
 </script>
 
 <template>
-
-<NuxtLayout>
-  <NuxtPage />
-</NuxtLayout>
-
-<AppLoader :loading="uiStore.loading" />
-
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>

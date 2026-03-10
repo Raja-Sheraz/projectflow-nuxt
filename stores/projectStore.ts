@@ -1,3 +1,5 @@
+// ProjectStore
+
 import { defineStore } from "pinia"
 import { ref } from "vue"
 import { projectService } from "../services/projectService"

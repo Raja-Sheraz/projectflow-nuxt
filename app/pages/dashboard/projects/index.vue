@@ -8,7 +8,6 @@ import { useDebounce } from "~/composables/useDebounce"
 import BaseModal from "~/components/BaseModal.vue"
 import EmptyState from "~/components/EmptyState.vue"
 
-
 definePageMeta({
   layout: "dashboard",
   middleware: "auth"
@@ -16,79 +15,80 @@ definePageMeta({
 
 const projectStore = useProjectStore()
 const authStore = useAuthStore()
-  
+
 onMounted(async () => {
   await projectStore.fetchProjects()
 })
 
-/* Admin check */
-
 const isAdmin = computed(() => authStore.user?.role === "admin")
 
-/* Modal */
-
 const showModal = ref(false)
-
-/* Editing */
-
 const editingId = ref<number | null>(null)
-
-/* Form */
 
 const name = ref("")
 const description = ref("")
 
-/* Search */
-
 const searchQuery = ref("")
 const debouncedSearch = useDebounce(() => searchQuery.value, 400)
 
-/* Filter */
-
 const selectedStatus = ref<"all" | "active" | "completed">("all")
 
-/* Pagination */
+const isSubmitting = ref(false)
 
 const currentPage = ref(1)
 const itemsPerPage = 5
 
 function resetForm() {
-
   editingId.value = null
   name.value = ""
   description.value = ""
   showModal.value = false
-
 }
-
-/* Add / Update */
 
 async function handleSubmit() {
 
-  if (!name.value.trim() || !description.value.trim()) return
+  if (isSubmitting.value) return
 
-  if (editingId.value) {
+if (name.value.trim().length < 5) {
+  alert("Project name must be at least 5 characters")
+  return
+}
 
-    await projectStore.updateProject(
-      editingId.value,
-      name.value,
-      description.value
-    )
+if (description.value.trim().length < 5) {
+  alert("Description must be at least 5 characters")
+  return
+}
 
-  } else {
+  try {
 
-    await projectStore.addProject(
-      name.value,
-      description.value
-    )
+    isSubmitting.value = true
+
+    if (editingId.value) {
+
+      await projectStore.updateProject(
+        editingId.value,
+        name.value,
+        description.value
+      )
+
+    } else {
+
+      await projectStore.addProject(
+        name.value,
+        description.value
+      )
+
+    }
+
+    resetForm()
+
+  } finally {
+
+    isSubmitting.value = false
 
   }
 
-  resetForm()
-
 }
-
-/* Edit */
 
 function startEdit(project: any) {
 
@@ -97,22 +97,20 @@ function startEdit(project: any) {
   description.value = project.description
 
   showModal.value = true
-
 }
-
-/* Delete */
 
 function deleteProject(id: number) {
-  projectStore.deleteProject(id)
-}
 
-/* Status change */
+  projectStore.deleteProject(id)
+
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value || 1
+  }
+}
 
 function markCompleted(project: any) {
   projectStore.toggleStatus(project.id)
 }
-
-/* Filter logic */
 
 const filteredProjects = computed(() => {
 
@@ -128,12 +126,9 @@ const filteredProjects = computed(() => {
       project.status === selectedStatus.value
 
     return matchesSearch && matchesStatus
-
   })
 
 })
-
-/* Pagination */
 
 const totalPages = computed(() =>
   Math.ceil(filteredProjects.value.length / itemsPerPage)
@@ -151,12 +146,9 @@ const paginatedProjects = computed(() => {
 })
 </script>
 
-
 <template>
 
 <div class="max-w-6xl mx-auto space-y-6">
-
-<!-- Header -->
 
 <div class="flex justify-between items-center">
 
@@ -174,8 +166,6 @@ Add Project
 
 </div>
 
-
-<!-- Search + Filter -->
 
 <div class="flex gap-4">
 
@@ -197,15 +187,11 @@ class="border px-3 py-2 rounded"
 </div>
 
 
-<!-- Empty -->
-
 <EmptyState
 v-if="filteredProjects.length === 0"
 message="No projects found"
 />
 
-
-<!-- Project Cards -->
 
 <div v-if="paginatedProjects.length" class="space-y-4">
 
@@ -231,17 +217,15 @@ class="text-xs px-2 py-1 rounded mt-2 inline-block"
 ? 'bg-green-100 text-green-700'
 : 'bg-gray-200 text-gray-600'"
 >
-
 {{ project.status }}
-
 </span>
 
 </div>
 
-
-<div v-if="isAdmin" class="flex gap-3 text-sm">
+<div class="flex gap-3 text-sm">
 
 <button
+v-if="isAdmin"
 @click="startEdit(project)"
 class="text-blue-600"
 >
@@ -249,30 +233,35 @@ Edit
 </button>
 
 <button
+v-if="isAdmin"
 @click="markCompleted(project)"
 class="text-purple-600"
 >
-{{ project.status === 'active'
-? 'Mark Completed'
-: 'Mark Active'
-}}
-</button>
+{{ project.status === "active" ? "Mark Completed" : "Mark Active" }}</button>
 
 <button
+
+
+v-if="isAdmin"
 @click="deleteProject(project.id)"
 class="text-red-500"
 >
 Delete
 </button>
 
-</div>
+<NuxtLink
+:to="`/dashboard/projects/${project.id}`"
+class="text-indigo-600"
+>
+View Tasks
+</NuxtLink>
 
 </div>
 
 </div>
 
+</div>
 
-<!-- Pagination -->
 
 <div
 v-if="totalPages > 1"
@@ -281,6 +270,7 @@ class="flex justify-center gap-2"
 
 <button
 @click="currentPage--"
+:disabled="currentPage === 1"
 class="border px-3 py-1 rounded"
 >
 Prev
@@ -297,6 +287,7 @@ class="border px-3 py-1 rounded"
 
 <button
 @click="currentPage++"
+:disabled="currentPage === totalPages"
 class="border px-3 py-1 rounded"
 >
 Next
@@ -305,18 +296,13 @@ Next
 </div>
 
 
-<!-- Modal -->
-
 <BaseModal v-model="showModal">
 
 <template #header>
-
 <h2 class="text-xl font-semibold">
 {{ editingId ? "Edit Project" : "Add Project" }}
 </h2>
-
 </template>
-
 
 <input
 v-model="name"
@@ -329,7 +315,6 @@ v-model="description"
 placeholder="Description"
 class="border rounded px-4 py-2 w-full mb-3"
 />
-
 
 <template #footer>
 
@@ -344,9 +329,10 @@ Cancel
 
 <button
 @click="handleSubmit"
-class="bg-blue-600 text-white px-4 py-2 rounded"
+:disabled="isSubmitting"
+class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
 >
-Save
+{{ isSubmitting ? "Saving..." : "Save" }}
 </button>
 
 </div>
