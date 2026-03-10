@@ -80,12 +80,23 @@ saveTasks()
 
 }
 
-return{
+async function fetchAllTasks(){
+
+  const saved = localStorage.getItem("tasks")
+
+  if(saved){
+    tasks.value = JSON.parse(saved)
+  }
+
+}
+
+return {
 tasks,
 fetchTasks,
+fetchAllTasks,
 addTask,
-updateStatus,
-deleteTask
+deleteTask,
+updateStatus
 }
 
 })
