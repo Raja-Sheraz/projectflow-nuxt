@@ -22,6 +22,8 @@ export const useProjectStore = defineStore("projects", () => {
 
   async function fetchProjects() {
 
+    console.log("SERVER?", import.meta.server)
+
     try {
 
       uiStore.startLoading()

@@ -1,4 +1,27 @@
 <script setup lang="ts">
+
+// It overwrite global seo
+// useSeoMeta({
+//   title: "Login | ProjectFlow",
+//   description: "Login to ProjectFlow to manage your projects and tasks.",
+
+//   ogTitle: "Login | ProjectFlow",
+//   ogDescription: "Login to ProjectFlow project management system.",
+//   ogType: "website",
+//   ogUrl: "http://localhost:3000/login",
+
+//   twitterCard: "summary_large_image",
+//   twitterTitle: "Login | ProjectFlow",
+//   twitterDescription: "Login to ProjectFlow project management system."
+// })
+
+// i create compoable for this and just use here
+useSeo({
+  title: "Login",
+  description: "Login to ProjectFlow to manage your projects and tasks.",
+  path: "/login"
+})
+
 import { useAuthStore } from '../../stores/authStore'
 
 const authStore = useAuthStore()
@@ -14,6 +37,8 @@ function handleLogin() {
   router.push('/dashboard')
 
 }
+
+
 
 </script>
 

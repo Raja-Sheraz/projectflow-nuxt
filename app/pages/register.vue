@@ -1,5 +1,11 @@
 <script setup lang="ts">
 
+useSeo({
+  title: "Register",
+  description: "Create your ProjectFlow account.",
+  path: "/register"
+})
+
 import { ref } from "vue"
 import { useAuthStore } from "~~/stores/authStore"
 

@@ -1,4 +1,14 @@
 <script setup lang="ts">
+
+useSeo({
+  title: "Projects",
+  description: "Manage all your projects in ProjectFlow.",
+  path: "/dashboard/projects",
+  noIndex: true
+
+
+})
+
 import { ref, onMounted, computed } from "vue"
 
 import { useProjectStore } from "~~/stores/projectStore"

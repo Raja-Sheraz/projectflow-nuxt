@@ -1,4 +1,9 @@
 <script setup lang="ts">
+
+
+useSchema()
+
+
 import { onMounted } from "vue"
 import { useAuthStore } from "~~/stores/authStore"
 import { useUiStore } from "~~/stores/uiStore"

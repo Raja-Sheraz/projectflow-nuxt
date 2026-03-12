@@ -1,120 +1,120 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+  import { defineStore } from 'pinia'
+  import { ref } from 'vue'
 
-interface User {
-  id: number
-  name: string
-  email: string
-  password: string
-  role: 'admin' | 'member'
-}
+  interface User {
+    id: number
+    name: string
+    email: string
+    password: string
+    role: 'admin' | 'member'
+  }
 
-export const useAuthStore = defineStore('auth', () => {
+  export const useAuthStore = defineStore('auth', () => {
 
-  const user = ref<User | null>(null)
-  const token = ref<string | null>(null)
-  const users = ref<User[]>([])
+    const user = ref<User | null>(null)
+    const token = ref<string | null>(null)
+    const users = ref<User[]>([])
 
-  function loadUsers() {
+    function loadUsers() {
 
-    if (!import.meta.client) return
+      if (!import.meta.client) return
 
-    const saved = localStorage.getItem('users')
+      const saved = localStorage.getItem('users')
 
-    if (saved) {
-      users.value = JSON.parse(saved)
+      if (saved) {
+        users.value = JSON.parse(saved)
+      }
+
+      /* Ensure admin always exists */
+
+      const adminExists = users.value.some(
+        u => u.email === "admin@gmail.com"
+      )
+
+      if (!adminExists) {
+
+        users.value.push({
+          id: 1,
+          name: "Admin",
+          email: "admin@gmail.com",
+          password: "admin123",
+          role: "admin"
+        })
+
+        localStorage.setItem("users", JSON.stringify(users.value))
+      }
+
     }
 
-    /* Ensure admin always exists */
+    function register(name: string, email: string, password: string) {
 
-    const adminExists = users.value.some(
-      u => u.email === "admin@gmail.com"
-    )
+      loadUsers()
 
-    if (!adminExists) {
+      const newUser: User = {
+        id: Date.now(),
+        name,
+        email,
+        password,
+        role: "member"
+      }
 
-      users.value.push({
-        id: 1,
-        name: "Admin",
-        email: "admin@gmail.com",
-        password: "admin123",
-        role: "admin"
-      })
+      users.value.push(newUser)
 
       localStorage.setItem("users", JSON.stringify(users.value))
+
     }
 
-  }
+    function login(email: string, password: string) {
 
-  function register(name: string, email: string, password: string) {
+      loadUsers()
 
-    loadUsers()
+      const foundUser = users.value.find(
+        u => u.email === email && u.password === password
+      )
 
-    const newUser: User = {
-      id: Date.now(),
-      name,
-      email,
-      password,
-      role: "member"
+      if (!foundUser) {
+        alert("Invalid credentials")
+        return
+      }
+
+      user.value = foundUser
+      token.value = "demo-token"
+
+      localStorage.setItem("token", token.value)
+      localStorage.setItem("user", JSON.stringify(user.value))
+
     }
 
-    users.value.push(newUser)
+    function loadUser() {
 
-    localStorage.setItem("users", JSON.stringify(users.value))
+      if (!import.meta.client) return
 
-  }
+      const saved = localStorage.getItem("user")
 
-  function login(email: string, password: string) {
+      if (saved) {
+        user.value = JSON.parse(saved)
+      }
 
-    loadUsers()
-
-    const foundUser = users.value.find(
-      u => u.email === email && u.password === password
-    )
-
-    if (!foundUser) {
-      alert("Invalid credentials")
-      return
     }
 
-    user.value = foundUser
-    token.value = "demo-token"
+    function logout() {
 
-    localStorage.setItem("token", token.value)
-    localStorage.setItem("user", JSON.stringify(user.value))
+      user.value = null
+      token.value = null
 
-  }
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
 
-  function loadUser() {
-
-    if (!import.meta.client) return
-
-    const saved = localStorage.getItem("user")
-
-    if (saved) {
-      user.value = JSON.parse(saved)
     }
 
-  }
+    return {
+      user,
+      token,
+      users,
+      register,
+      login,
+      logout,
+      loadUser
+    }
 
-  function logout() {
-
-    user.value = null
-    token.value = null
-
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-
-  }
-
-  return {
-    user,
-    token,
-    users,
-    register,
-    login,
-    logout,
-    loadUser
-  }
-
-})
+  })

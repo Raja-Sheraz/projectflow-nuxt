@@ -1,5 +1,10 @@
-```vue
 <script setup lang="ts">
+
+// useSeo({
+//   title: "Project Tasks",
+//   description: "Track and manage tasks in your project.",
+// })
+
 
 import { ref, computed, onMounted } from "vue"
 import { useRoute } from "#app"
@@ -20,6 +25,14 @@ definePageMeta({
 
 const route = useRoute()
 const projectId = Number(route.params.id)
+
+/* SEO   dynamic Meta Seo  */ 
+useSeo({
+  title: `Project ${projectId} Tasks`,
+  description: "Track and manage tasks in this project.",
+  path: `/dashboard/projects/${projectId}`,
+  noIndex: true
+})
 
 const taskStore = useTaskStore()
 const authStore = useAuthStore()
