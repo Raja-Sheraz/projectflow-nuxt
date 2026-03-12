@@ -7,7 +7,32 @@ The application allows users to create projects, manage tasks, and organize work
 
 This project was also used to practice **SEO implementation in Nuxt**, including SSR rendering, meta tags, sitemap, canonical URLs, and structured data.
 
+I built a project management system called ProjectFlow using Vue 3 with Composition API.
+The application allows users to manage projects and tasks using a Kanban board.
+
+It includes:
+
+* Authentication system (login/register)
+* Protected routes using Vue Router guards
+* State management using Pinia
+* API abstraction using Axios
+* LocalStorage persistence
+* Project CRUD with search, filter, and pagination
+* Task management with drag-and-drop Kanban board
+* Reusable components like modal, loader, and empty state
+* A custom composable for debounced search
 ---
+After completing the Vue version, I converted the project to Nuxt 4 to support SSR and SEO, where I implemented:
+
+* SSR rendering
+* Global SEO (nuxt.config)
+* Reusable SEO composable
+* Dynamic page SEO
+* Canonical URLs
+* Robots meta rules (noindex)
+* Structured data (schema)
+* Sitemap.xml
+* robots.txt
 
 # Application Features
 
