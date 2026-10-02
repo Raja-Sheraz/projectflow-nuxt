@@ -1,81 +1,88 @@
 <script setup lang="ts">
 
-// It overwrite global seo
-// useSeoMeta({
-//   title: "Login | ProjectFlow",
-//   description: "Login to ProjectFlow to manage your projects and tasks.",
+import { useAuthStore } from '../../stores/authStore'
 
-//   ogTitle: "Login | ProjectFlow",
-//   ogDescription: "Login to ProjectFlow project management system.",
-//   ogType: "website",
-//   ogUrl: "http://localhost:3000/login",
-
-//   twitterCard: "summary_large_image",
-//   twitterTitle: "Login | ProjectFlow",
-//   twitterDescription: "Login to ProjectFlow project management system."
-// })
-
-// i create compoable for this and just use here
 useSeo({
   title: "Login",
   description: "Login to ProjectFlow to manage your projects and tasks.",
   path: "/login"
 })
 
-import { useAuthStore } from '../../stores/authStore'
-
 const authStore = useAuthStore()
 const router = useRouter()
 
 const email = ref('')
 const password = ref('')
+const error = ref('')
 
 function handleLogin() {
 
-  authStore.login(email.value, password.value)
+  error.value = ''
+
+  if (!authStore.login(email.value.trim(), password.value)) {
+    error.value = 'Incorrect email or password.'
+    return
+  }
 
   router.push('/dashboard')
 
 }
 
-
-
 </script>
 
 <template>
 
-  <div class="p-10 max-w-md mx-auto">
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
 
-    <h1 class="text-2xl font-bold mb-4">
-      Login
-    </h1>
+<form
+class="bg-white p-8 rounded shadow w-96 space-y-4"
+@submit.prevent="handleLogin"
+>
 
-    <input
-      v-model="email"
-      placeholder="Email"
-      class="border p-2 w-full mb-3"
-    />
+<h1 class="text-xl font-semibold text-center">
+Login
+</h1>
 
-    <input
-      v-model="password"
-      type="password"
-      placeholder="Password"
-      class="border p-2 w-full mb-3"
-    />
+<input
+v-model="email"
+type="email"
+placeholder="Email"
+autocomplete="username"
+class="border w-full px-3 py-2 rounded"
+/>
 
-    <button
-      @click="handleLogin"
-      class="bg-blue-500 text-white px-4 py-2"
-    >
-      Login
-    </button>
-    <NuxtLink
+<input
+v-model="password"
+type="password"
+placeholder="Password"
+autocomplete="current-password"
+class="border w-full px-3 py-2 rounded"
+/>
+
+<p
+v-if="error"
+role="alert"
+class="text-sm text-red-600"
+>
+{{ error }}
+</p>
+
+<button
+type="submit"
+class="w-full bg-blue-600 text-white py-2 rounded"
+>
+Login
+</button>
+
+<NuxtLink
 to="/register"
-class="block text-center text-sm text-blue-600 mt-2"
+class="block text-center text-sm text-blue-600"
 >
 Create account
 </NuxtLink>
 
-  </div>
+</form>
+
+</div>
 
 </template>

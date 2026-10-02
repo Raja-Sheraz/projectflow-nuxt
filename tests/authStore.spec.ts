@@ -5,8 +5,7 @@ describe('authStore', () => {
   it('seeds the built-in admin account so it can always sign in', () => {
     const auth = useAuthStore()
 
-    auth.login('admin@gmail.com', 'admin123')
-
+    expect(auth.login('admin@gmail.com', 'admin123')).toBe(true)
     expect(auth.user?.role).toBe('admin')
     expect(localStorage.getItem('token')).toBe('demo-token')
   })
@@ -24,8 +23,7 @@ describe('authStore', () => {
   it('does not sign in with a wrong password', () => {
     const auth = useAuthStore()
 
-    auth.login('admin@gmail.com', 'wrong-password')
-
+    expect(auth.login('admin@gmail.com', 'wrong-password')).toBe(false)
     expect(auth.user).toBeNull()
     expect(localStorage.getItem('token')).toBeNull()
   })
