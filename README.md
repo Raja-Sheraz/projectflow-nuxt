@@ -66,7 +66,7 @@ After completing the Vue version, I converted the project to Nuxt 4 to support S
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/projectflow-nuxt.git
+git clone https://github.com/Raja-Sheraz/projectflow-nuxt.git
 ````
 
 Install dependencies:
