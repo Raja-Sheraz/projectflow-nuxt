@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 
 export interface Task {
   id: number
@@ -10,93 +10,80 @@ export interface Task {
   assignedTo?: string
 }
 
-export const useTaskStore=defineStore("tasks",()=>{
+export const useTaskStore = defineStore("tasks", () => {
 
-const tasks=ref<Task[]>([])
+  /* Every task across all projects. Always save this list, never a filtered view. */
+  const allTasks = ref<Task[]>([])
 
-function loadTasks(){
+  /* The project currently on screen, or null for the dashboard (all projects) */
+  const currentProjectId = ref<number | null>(null)
 
-const data=localStorage.getItem("tasks")
+  const tasks = computed(() =>
+    currentProjectId.value === null
+      ? allTasks.value
+      : allTasks.value.filter(t => t.projectId === currentProjectId.value)
+  )
 
-if(!data) return
-
-tasks.value=JSON.parse(data)
-
-}
-
-function saveTasks(){
-
-localStorage.setItem("tasks",JSON.stringify(tasks.value))
-
-}
-
-async function fetchTasks(projectId:number){
-
-loadTasks()
-
-tasks.value=tasks.value.filter(t=>t.projectId===projectId)
-
-}
-
-async function addTask(
-  projectId:number,
-  title:string,
-  description:string,
-  assignedTo:string
-){
-    
-const newTask:Task = {
-  id: Date.now(),
-  title,
-  description,
-  projectId,
-  status:"todo",
-  assignedTo
-}
-
-tasks.value.push(newTask)
-
-saveTasks()
-
-}
-
-function updateStatus(id:number,status:"todo"|"progress"|"done"){
-
-const task=tasks.value.find(t=>t.id===id)
-
-if(!task) return
-
-task.status=status
-
-saveTasks()
-
-}
-
-function deleteTask(id:number){
-
-tasks.value=tasks.value.filter(t=>t.id!==id)
-
-saveTasks()
-
-}
-
-async function fetchAllTasks(){
-
-  const saved = localStorage.getItem("tasks")
-
-  if(saved){
-    tasks.value = JSON.parse(saved)
+  function loadTasks() {
+    const data = localStorage.getItem("tasks")
+    allTasks.value = data ? JSON.parse(data) : []
   }
 
-}
+  function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(allTasks.value))
+  }
 
-return {
-tasks,
-fetchTasks,
-fetchAllTasks,
-addTask,
-deleteTask,
-updateStatus
-}
+  async function fetchTasks(projectId: number) {
+    loadTasks()
+    currentProjectId.value = projectId
+  }
+
+  async function fetchAllTasks() {
+    loadTasks()
+    currentProjectId.value = null
+  }
+
+  async function addTask(
+    projectId: number,
+    title: string,
+    description: string,
+    assignedTo: string
+  ) {
+    allTasks.value.push({
+      id: Date.now(),
+      title,
+      description,
+      projectId,
+      status: "todo",
+      assignedTo
+    })
+
+    saveTasks()
+  }
+
+  function updateStatus(id: number, status: "todo" | "progress" | "done") {
+    const task = allTasks.value.find(t => t.id === id)
+
+    if (!task) return
+
+    task.status = status
+
+    saveTasks()
+  }
+
+  function deleteTask(id: number) {
+    allTasks.value = allTasks.value.filter(t => t.id !== id)
+
+    saveTasks()
+  }
+
+  return {
+    tasks,
+    fetchTasks,
+    fetchAllTasks,
+    addTask,
+    deleteTask,
+    updateStatus
+  }
 
 })
