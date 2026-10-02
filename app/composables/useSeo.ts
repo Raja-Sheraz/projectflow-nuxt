@@ -6,7 +6,8 @@ export const useSeo = (options: {
 }) => {
 
   const siteName = "ProjectFlow"
-  const url = `http://localhost:3000${options.path || ""}`
+  const { appUrl: siteUrl } = useRuntimeConfig().public
+  const url = `${siteUrl}${options.path || ""}`
 
   useSeoMeta({
     title: `${options.title} | ${siteName}`,
