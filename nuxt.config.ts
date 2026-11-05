@@ -16,6 +16,10 @@ export default defineNuxtConfig({
         { property: "og:site_name", content: "ProjectFlow" },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" }
+      ],
+      // Point at the favicon under the base path, so it also loads when served from a sub-path
+      link: [
+        { rel: "icon", type: "image/x-icon", href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon.ico` }
       ]
     }
   },
