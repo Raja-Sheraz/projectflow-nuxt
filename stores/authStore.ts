@@ -64,7 +64,7 @@
 
     }
 
-    function login(email: string, password: string) {
+    function login(email: string, password: string): boolean {
 
       loadUsers()
 
@@ -72,16 +72,15 @@
         u => u.email === email && u.password === password
       )
 
-      if (!foundUser) {
-        alert("Invalid credentials")
-        return
-      }
+      if (!foundUser) return false
 
       user.value = foundUser
       token.value = "demo-token"
 
       localStorage.setItem("token", token.value)
       localStorage.setItem("user", JSON.stringify(user.value))
+
+      return true
 
     }
 
