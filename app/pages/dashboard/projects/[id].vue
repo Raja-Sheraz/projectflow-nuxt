@@ -1,11 +1,5 @@
 <script setup lang="ts">
 
-// useSeo({
-//   title: "Project Tasks",
-//   description: "Track and manage tasks in your project.",
-// })
-
-
 import { ref, computed, onMounted } from "vue"
 import { useRoute } from "#app"
 import draggable from "vuedraggable"

@@ -1,5 +1,7 @@
 export const useSchema = () => {
 
+  const { appUrl: siteUrl } = useRuntimeConfig().public
+
   useHead({
     script: [
       {
@@ -11,7 +13,7 @@ export const useSchema = () => {
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Web",
           "description": "ProjectFlow task and project management system",
-          "url": "http://localhost:3000"
+          "url": siteUrl
         })
       }
     ]
