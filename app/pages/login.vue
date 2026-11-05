@@ -28,6 +28,16 @@ function handleLogin() {
 
 }
 
+/* Signs in with the built-in demo admin account */
+function tryDemo() {
+
+  email.value = 'admin@gmail.com'
+  password.value = 'admin123'
+
+  handleLogin()
+
+}
+
 </script>
 
 <template>
@@ -73,6 +83,18 @@ class="w-full bg-blue-600 text-white py-2 rounded"
 >
 Login
 </button>
+
+<button
+type="button"
+class="w-full border border-blue-600 text-blue-600 py-2 rounded"
+@click="tryDemo"
+>
+Try the demo
+</button>
+
+<p class="text-xs text-center text-gray-500">
+Demo account: admin@gmail.com / admin123
+</p>
 
 <NuxtLink
 to="/register"
